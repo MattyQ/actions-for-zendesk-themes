@@ -1,0 +1,49 @@
+name: Import theme
+
+on:
+  workflow_dispatch:
+    inputs:
+      brandId:
+        description: 'Brand ID'
+        required: true
+      branchName:
+        description: 'Branch Name'
+        required: true
+
+jobs:
+  run_script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branchName }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14.x
+
+      - name: Install dependencies
+        run: npm ci --prefix ./.github/workflows/scripts/
+
+      - name: Zip theme files
+        run: |
+          zip -r theme.zip . -x ".*"
+          mv theme.zip ./.github/workflows/scripts/
+
+      - name: List files
+        run: ls -la ./.github/workflows/scripts/
+
+      - name: Run script
+        run: node ./.github/workflows/scripts/importTheme.js ${{ github.event.inputs.brandId }} ./.github/workflows/scripts/theme.zip
+        env:
+          ZENDESK_SUBDOMAIN: ${{ secrets.ZENDESK_SUBDOMAIN }}
+          ZENDESK_EMAIL: ${{ secrets.ZENDESK_EMAIL }}
+          ZENDESK_TOKEN: ${{ secrets.ZENDESK_TOKEN }}
+
+      - name: Upload theme file
+        uses: actions/upload-artifact@v2
+        with:
+          name: theme-file
+          path: ./.github/workflows/scripts/theme.zip

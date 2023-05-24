@@ -1,4 +1,5 @@
 const axios = require('axios');
+const fs = require('fs');
 
 const instance = axios.create({
   baseURL: `https://${process.env['ZENDESK_SUBDOMAIN']}.zendesk.com/api/v2`,
@@ -17,10 +18,20 @@ if (!themeId) {
 
 instance.post(`/guide/theming/themes/${themeId}/publish`)
   .then((response) => {
-    console.log(JSON.stringify(response.data));
-    return JSON.stringify(response.data);
+    console.log('::group::Publish Theme Response');
+    const prettyResponse = JSON.stringify(response.data, null, 2);
+    console.log(prettyResponse);
+    console.log('::endgroup::');
+
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\n\n## Publish Theme Response\n\`\`\`json\n${prettyResponse}\n\`\`\``);
   })
   .catch((error) => {
-    console.log(JSON.stringify(error));
-    return new Error(JSON.stringify(error));
+    console.log('::group::Action failed with error');
+    const prettyError = JSON.stringify(error, null, 2);
+    console.log(prettyError);
+    console.log('::endgroup::');
+
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\n\n## Publish Theme Error\n\`\`\`json\n${prettyError}\n\`\`\``);
+
+    process.exit(1);
   });

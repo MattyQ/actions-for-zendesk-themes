@@ -16,7 +16,7 @@ This section assumes you want to set up a fresh GitHub repository for your Zende
 
 1. [Fork the repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
 2. Create the following [repository secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository):
-  - `ZENDESK_SUBDOMAIN`: The subdomain for your Zendesk Help Center. For example, if your Help Center URL is https://example-subdomain.zendesk.com/, you set the token to `example-subdomain`.
+  - `ZENDESK_SUBDOMAIN`: The subdomain for your Zendesk Help Center. For example, if your Help Center URL is https://example-subdomain.zendesk.com/, you set the secret to `example-subdomain`.
   - `ZENDESK_EMAIL`: The email for the account that you want to use to [authenticate](https://developer.zendesk.com/api-reference/introduction/security-and-auth/#api-token). Because the actions use a Zendesk token, use the following format for the email address: `jdoe@example.com/token`
   - `ZENDESK_TOKEN`: The Zendesk token that you want to use to authenticate. See the [Zendesk documentation](https://support.zendesk.com/hc/en-us/articles/4408889192858-Generating-a-new-API-token) for instructions about generating a token. For example: `6wiIBWbGkBMo1mRDMuVwkw1EPsNkeUj95PIz2akv`
 3. If the default or root branch of your repository is not named `main`, go through the .yml files in `.github/workflows` and change the `on.workflow_dispatch.inputs.scriptBranch.default` value to the name of your default branch.

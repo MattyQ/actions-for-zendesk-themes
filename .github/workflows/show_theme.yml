@@ -6,13 +6,23 @@ on:
       themeId:
         description: 'Theme ID'
         required: true
+      scriptBranch:
+        description: 'Run scripts from'
+        required: true
+        default: 'main'
 
 jobs:
-  run_script:
+  show_theme:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+
+      - name: Check out showTheme.js
+        uses: Bhacaz/checkout-files@v2
+        with:
+          files: '.github/workflows/scripts/showTheme.js'
+          branch: ${{ github.event.inputs.scriptBranch }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -22,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: npm ci --prefix ./.github/workflows/scripts/
 
-      - name: Run script
+      - name: Run showTheme.js
         run: node ./.github/workflows/scripts/showTheme.js ${{ github.event.inputs.themeId }}
         env:
           ZENDESK_SUBDOMAIN: ${{ secrets.ZENDESK_SUBDOMAIN }}

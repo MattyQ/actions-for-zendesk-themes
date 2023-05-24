@@ -1,4 +1,5 @@
 const axios = require('axios');
+const fs = require('fs');
 
 const instance = axios.create({
   baseURL: `https://${process.env['ZENDESK_SUBDOMAIN']}.zendesk.com/api/v2`,
@@ -17,10 +18,20 @@ if (!themeId) {
 
 instance.delete(`/guide/theming/themes/${themeId}`)
   .then((response) => {
-    console.log("Theme Deleted Successfully");
-    return JSON.stringify(response.data);
+    console.log('::group::Delete Theme Response');
+    const prettyResponse = JSON.stringify(response.data, null, 2);
+    console.log(prettyResponse);
+    console.log('::endgroup::');
+  
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\n\n## Delete Theme Response\n\`\`\`text\nYour theme was successfully deleted!\n\`\`\``);
   })
   .catch((error) => {
-    console.log(error);
-    return new Error(JSON.stringify(error));
+    console.log('::group::Action failed with error');
+    const prettyError = JSON.stringify(error, null, 2);
+    console.log(prettyError);
+    console.log('::endgroup::');
+
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\n\n## Delete Theme Error\n\`\`\`json\n${prettyError}\n\`\`\``);
+
+    process.exit(1);
   });

@@ -5,22 +5,39 @@ on:
     inputs:
       themeId:
         description: 'Theme ID'
+        type: string
         required: true
+        default: ''
       branchName:
         description: 'Branch Name'
+        type: string
+        required: false
+        default: ''
+      scriptBranch:
+        description: 'Run scripts from'
+        type: string
         required: true
+        default: 'main'
       replaceSettings:
         description: 'Replace Settings'
+        type: boolean
         required: true
+        default: true
 
 jobs:
-  run_script:
+  update_theme:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.inputs.branchName }}
+          ref: ${{ github.event.inputs.branchName || github.ref }}
+
+      - name: Check out updateTheme.js
+        uses: Bhacaz/checkout-files@v2
+        with:
+          files: '.github/workflows/scripts/updateTheme.js'
+          branch: ${{ github.event.inputs.scriptBranch }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -35,10 +52,7 @@ jobs:
           zip -r theme.zip . -x ".*"
           mv theme.zip ./.github/workflows/scripts/
 
-      - name: List files
-        run: ls -la ./.github/workflows/scripts/
-
-      - name: Run script
+      - name: Run updateTheme.js
         run: node ./.github/workflows/scripts/updateTheme.js ${{ github.event.inputs.themeId }} ./.github/workflows/scripts/theme.zip ${{ github.event.inputs.replaceSettings }}
         env:
           ZENDESK_SUBDOMAIN: ${{ secrets.ZENDESK_SUBDOMAIN }}

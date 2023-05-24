@@ -34,6 +34,8 @@ To use each of the actions, follow these common steps:
 1. On the left side of the **Actions** page of your GitHub repository, select the GitHub Action you want to run.
 2. On the right side of the **Actions** page, select **Run workflow**.
 
+The actions are listed loosely in order of how they might be commonly used.
+
 ### List themes
 
 This action has no required inputs.

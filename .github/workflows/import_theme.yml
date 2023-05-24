@@ -9,15 +9,25 @@ on:
       branchName:
         description: 'Branch Name'
         required: true
+      scriptBranch:
+        description: 'Run scripts from'
+        required: true
+        default: 'main'
 
 jobs:
-  run_script:
+  import_theme:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.inputs.branchName }}
+
+      - name: Check out importTheme.js
+        uses: Bhacaz/checkout-files@v2
+        with:
+          files: '.github/workflows/scripts/importTheme.js'
+          branch: ${{ github.event.inputs.scriptBranch }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -32,10 +42,7 @@ jobs:
           zip -r theme.zip . -x ".*"
           mv theme.zip ./.github/workflows/scripts/
 
-      - name: List files
-        run: ls -la ./.github/workflows/scripts/
-
-      - name: Run script
+      - name: Run importTheme.js
         run: node ./.github/workflows/scripts/importTheme.js ${{ github.event.inputs.brandId }} ./.github/workflows/scripts/theme.zip
         env:
           ZENDESK_SUBDOMAIN: ${{ secrets.ZENDESK_SUBDOMAIN }}
